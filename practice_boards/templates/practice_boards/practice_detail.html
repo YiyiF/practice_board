@@ -1,0 +1,11 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Title: {{ practice.title }}</h1>
+
+  <p><strong>Author:</strong> <a href="">{{ practice.author }}</a></p> <!-- author detail link not yet defined -->
+  <p><strong>date_of_latest_submit:</strong> {{ practice.date_of_latest_submit }}</p>
+  <p><strong>code_language:</strong> {% for code_language in practice.code_language.all %} {{ code_language }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+  <p><strong>upload:</strong> {{ practice.upload }}</p>
+
+{% endblock %}

@@ -12,17 +12,17 @@ class Author(models.Model):
     date_of_signup = models.DateField(auto_now_add=True)
     practices = models.ForeignKey('Practice', on_delete=models.CASCADE, blank=True, null=True, related_name='+')
 
-    def get_absolute_url(self):
-        """
-        Returns the url to access a particular author instance.
-        """
-        return reverse('author-detail', args=[str(self.id)])
-
     def __str__(self):
         """
         String for representing the Model object.
         """
         return '%s' % self.name
+
+
+class Question(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.CharField(max_length=200, default='')
+    practice = models.ForeignKey('Practice', on_delete=models.CASCADE, blank=True, null=True, related_name='+')
 
 
 class Practice(models.Model):
@@ -31,6 +31,8 @@ class Practice(models.Model):
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4,
                           help_text="Unique ID for this particular book across whole library")
+    question = models.ForeignKey('Question', on_delete=models.SET_NULL, null=True, related_name='+')
+    upload = models.FileField(upload_to='uploads/%Y/%m/%d/', default='')
     title = models.CharField(max_length=200)
     author = models.ForeignKey('Author', on_delete=models.SET_NULL, null=True)
     date_of_first_submit = models.DateField(auto_now_add=True)
@@ -39,6 +41,9 @@ class Practice(models.Model):
     code_lines = models.PositiveSmallIntegerField()
     execute_result = models.CharField(max_length=20)
     execute_time = models.TimeField()
+
+    def get_absolute_url(self):
+        return reverse('practice-detail', args=[str(self.id)])
 
     def __str__(self):
         """

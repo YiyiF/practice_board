@@ -1,6 +1,4 @@
 from django.contrib import admin
-
-# Register your models here.
 from .models import Author, Practice, CodeLanguage
 
 
@@ -10,9 +8,6 @@ from .models import Author, Practice, CodeLanguage
 
 class AuthorAdmin(admin.ModelAdmin):
     list_display = ('name', 'department', 'practices')
-
-
-# Register the admin class with the associated model
 
 
 admin.site.register(Author, AuthorAdmin)

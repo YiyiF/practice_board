@@ -1,0 +1,21 @@
+{% extends "base_generic.html" %}
+<!--{% load static %}-->
+
+<!--<link rel="stylesheet" type="text/css" href="{% static 'practice_boards/style.css' %}">-->
+
+{% block content %}
+    <h1>Practice List</h1>
+
+    {% if practice_list %}
+    <ul style="list-style-type: decimal">
+      {% for practice in practice_list %}
+      <li>
+        <a href="{{ practice.get_absolute_url }}">{{ practice.title }}</a> ({{practice.author}})
+      </li>
+      {% endfor %}
+
+    </ul>
+    {% else %}
+      <p>There are no practices.</p>
+    {% endif %} 
+{% endblock %}
