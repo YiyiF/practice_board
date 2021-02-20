@@ -1,21 +1,65 @@
-{% extends "base_generic.html" %}
-<!--{% load static %}-->
-
-<!--<link rel="stylesheet" type="text/css" href="{% static 'practice_boards/style.css' %}">-->
-
-{% block content %}
-    <h1>Practice List</h1>
-
-    {% if practice_list %}
-    <ul style="list-style-type: decimal">
-      {% for practice in practice_list %}
-      <li>
-        <a href="{{ practice.get_absolute_url }}">{{ practice.title }}</a> ({{practice.author}})
-      </li>
-      {% endfor %}
-
-    </ul>
-    {% else %}
-      <p>There are no practices.</p>
-    {% endif %} 
-{% endblock %}
+<!DOCTYPE html>
+<!--[if lte IE 8]> <html class="oldie" lang="en"> <![endif]-->
+<!--[if IE 9]> <html class="ie9" lang="en"> <![endif]-->
+<!--[if gt IE 9]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="format-detection" content="telephone=no">
+	<title>Practice Board</title>
+	{% load static %}
+	<link rel="stylesheet" href="{% static 'practice_boards/js/fancybox/jquery.fancybox.css' %}" type="text/css" media="screen" />
+	<link rel="stylesheet" href="{% static 'practice_boards/css/all.css' %}" />
+	<link rel="stylesheet" href="{% static 'practice_boards/css/screen.css' %}" />
+	<!--[if lt IE 9]>
+		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+</head>
+<body>
+	<div id="wrapper" class="inner">
+		<div class="wrapper-holder">
+			<header id="header">
+				<a class="menu_trigger" href="#">menu</a>
+					<nav id="nav">
+						<ul>
+                            <li><a href="{% url 'index' %}">Home</a></li>
+							<li><a class="active" href="{% url 'practices' %}">All practices</a></li>
+                            <li><a href="{% url 'authors' %}">All authors</a></li>
+							<li><a href="Contact.html">Contact</a></li>
+						</ul>
+					</nav>
+			</header>
+		</div>
+		<div class="wrapper-holder grey">
+			<section id="main">
+				<div class="skills_holder">
+					{% if latest_questions %}
+					<div class="column">
+						{% for question in latest_questions %}
+						<h2>{{ question }}</h2>
+						<p style="width: 940px;">{{ question.description }}</p>
+						<ul class="progress">
+							{% for practice in question.generate_done_practices %}
+								<li><span class="photoshop"><a href="{{ practice.get_absolute_url }}">{{practice.author}}</a></span></li>
+							{% endfor %}
+							{% for author in question.generate_undo_authors %}
+								<li><span class="indesign"><a href="">{{author.name}}</a></span></li>
+							{% endfor %}
+						</ul>
+						{% endfor %}
+					</div>
+					{% else %}
+      					<p>There are no practices.</p>
+                	{% endif %}
+				</div>
+			</section>
+		</div>
+	</div>
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script src="{% static 'practice_boards/js/isotope.pkgd.min.js' %}"></script>
+	<script src="{% static 'practice_boards/js/cells-by-row.js' %}"></script>
+	<script type="text/javascript" src="{% static 'practice_boards/js/fancybox/jquery.fancybox.pack.js' %}"></script>
+	<script type="text/javascript" src="{% static 'practice_boards/js/main.js' %}/"></script>
+</body>
+</html>

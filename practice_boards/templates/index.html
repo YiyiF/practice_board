@@ -25,7 +25,7 @@
 						<ul>
 							<li><a class="active" href="{% url 'index' %}">Home</a></li>
 							<li><a href="{% url 'practices' %}">All practices</a></li>
-                            <li><a href="">All authors</a></li>
+                            <li><a href="{% url 'authors' %}">All authors</a></li>
 							<li><a href="Contact.html">Contact</a></li>
 						</ul>
 					</nav>
@@ -35,7 +35,7 @@
 		</div>
 		<div class="wrapper-holder grey">
 			<section id="main">
-				<h2>Here are latest practices</h2>
+				<h2>Testing Department</h2>
                 {% if authors %}
 				<div class="box_timeline_holder">
 					<div class="box_timeline">
@@ -43,30 +43,22 @@
                             {% for author in authors %}
 							<li>
 								<div class="date">
-									<span>{{ author }}</span>
+									<span><a href="{{ author.get_absolute_url }}">{{ author.name }}</a></span>
 								</div>
-								<h3><a href="{{ latest_upload_practice.get_absolute_url }}">{{ latest_upload_practice.title }}</a></h3>
-								<p>Temp</p>
+								<h3>{{author.calculate_personal_practices}} practice(s) overall</h3>
+								{% for practice in author.generate_personal_practices %}
+									<p><a href="{{ practice.get_absolute_url }}">{{ practice.question }}</a></p>
+								{% endfor %}
 							</li>
                            {% endfor %}
 						</ul>
 					</div>
 				</div>
+				{% else %}
+      				<p>There are no practices.</p>
                 {% endif %}
 			</section>
 		</div>
-		<footer id="footer">
-			<div class="footer-content">
-				<ul class="social">
-					<li class="email"><a href="#">Email</a></li>
-					<li class="facebook"><a href="#">Facebook</a></li>
-					<li class="google"><a href="#">Google+</a></li>
-					<li class="twitter"><a href="#">Twitter</a></li>
-					<li class="pinterest"><a href="#">Pinterest</a></li>
-				</ul>
-<!--				<p class="copy">Thanks to: Copyright 2014 John Markowitz. All rights reserved.</p>-->
-			</div>
-		</footer>
 	</div>
 	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
 	<script src="{% static 'practice_boards/js/isotope.pkgd.min.js' %}"></script>

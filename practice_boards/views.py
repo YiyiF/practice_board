@@ -1,6 +1,6 @@
 from django.http.response import Http404, HttpResponse
 from django.shortcuts import render
-from .models import Author, Practice, CodeLanguage
+from .models import Author, Practice, CodeLanguage, Question
 from django.views import generic
 
 
@@ -10,10 +10,6 @@ def index(request):
     """
     # Generate counts of some of the main objects
     authors = Author.objects.all()
-    num_authors = Author.objects.all().count()
-    num_practices = Practice.objects.count()  # The 'all()' is implied by default.
-    # Specific author (author = 'FuYiyi')
-    num_practice_specific_author = Practice.objects.filter(author__name='FuYiyi').count()
 
     latest_upload_practice = Practice.objects.order_by('date_of_latest_submit')[0]
 
@@ -33,21 +29,22 @@ def index(request):
 class PracticeListView(generic.ListView):
     model = Practice
 
-    def practice_list_view(self, request):
-        # context_object_name = 'my_practice_list'  # your own name for the list as a template variable
-        queryset = Practice.objects.filter()[:5]  # Get 5 practices
+    def practice_list_view(request):
+        latest_questions = Question.objects.order_by('title')
+        all_authors = Author.objects.all()
+
+        context = {"latest_questions": latest_questions, "all_authors": all_authors}
+
         template_name = 'practice_list.html'
         return render(
             request,
             template_name,
-            context={'practice_list': queryset}
+            context,
         )
 
 
 class PracticeDetailView(generic.DetailView):
     model = Practice
-
-    # slug_field = 'id'
 
     def practice_detail_view(request, pk):
         try:
@@ -60,3 +57,24 @@ class PracticeDetailView(generic.DetailView):
             'practice_detail.html',
             context={'practice': practice_id, }
         )
+
+
+class AuthorDetailView(generic.DetailView):
+    model = Author
+    slug_field = 'name'
+
+    def author_detail_view(request, slug):
+        try:
+            author_name = Author.objects.get(author_name=slug)
+        except Author.DoesNotExist:
+            raise Http404("Author does not exist")
+
+        return render(
+            request,
+            'author_detail.html',
+            context={'author': author_name, }
+        )
+
+
+class AuthorListView(generic.ListView):
+    pass

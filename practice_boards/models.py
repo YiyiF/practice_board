@@ -7,10 +7,18 @@ class Author(models.Model):
     """
     Model representing an author.
     """
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, primary_key=True)
     department = models.CharField(max_length=100)
     date_of_signup = models.DateField(auto_now_add=True)
-    practices = models.ForeignKey('Practice', on_delete=models.CASCADE, blank=True, null=True, related_name='+')
+
+    def get_absolute_url(self):
+        return reverse('author-detail', args=[str(self.name)])
+
+    def calculate_personal_practices(self):
+        return Practice.objects.filter(author=self).count()
+
+    def generate_personal_practices(self):
+        return Practice.objects.filter(author=self)
 
     def __str__(self):
         """
@@ -20,36 +28,25 @@ class Author(models.Model):
 
 
 class Question(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=200, default='')
-    practice = models.ForeignKey('Practice', on_delete=models.CASCADE, blank=True, null=True, related_name='+')
+
+    def generate_done_practices(self):
+        return Practice.objects.filter(question_id=self)
+
+    def generate_undo_authors(self):
+        done_authors = self.generate_done_practices().values('author')
+        undo_authors = Author.objects.values('name').exclude(name__in=done_authors.all())
+        return undo_authors
 
 
-class Practice(models.Model):
-    """
-    Model representing a programming file.
-    """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4,
-                          help_text="Unique ID for this particular book across whole library")
-    question = models.ForeignKey('Question', on_delete=models.SET_NULL, null=True, related_name='+')
-    upload = models.FileField(upload_to='uploads/%Y/%m/%d/', default='')
-    title = models.CharField(max_length=200)
-    author = models.ForeignKey('Author', on_delete=models.SET_NULL, null=True)
-    date_of_first_submit = models.DateField(auto_now_add=True)
-    date_of_latest_submit = models.DateField(auto_now_add=True)
-    code_language = models.ForeignKey('CodeLanguage', on_delete=models.DO_NOTHING, null=True)
-    code_lines = models.PositiveSmallIntegerField()
-    execute_result = models.CharField(max_length=20)
-    execute_time = models.TimeField()
-
-    def get_absolute_url(self):
-        return reverse('practice-detail', args=[str(self.id)])
 
     def __str__(self):
         """
-        String for representing the Model object (in Admin site etc.)
+        String for representing the Model object.
         """
-        return self.title
+        return '%s' % self.title
 
 
 class CodeLanguage(models.Model):
@@ -63,5 +60,36 @@ class CodeLanguage(models.Model):
         String for representing the Model object (in Admin site etc.)
         """
         return self.name
+
+
+class Practice(models.Model):
+    """
+    Model representing a programming file.
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4,
+                          help_text="Unique ID for this particular book across whole library")
+    question = models.ForeignKey(Question, to_field='id', on_delete=models.CASCADE, blank=True, null=True)
+    upload = models.FileField(upload_to='uploads/%Y/%m/%d/', null=True, default='')
+    title = models.CharField(max_length=200)
+    author = models.ForeignKey(Author, to_field='name', on_delete=models.CASCADE, blank=True, null=True)
+    date_of_first_submit = models.DateField(auto_now_add=True)
+    date_of_latest_submit = models.DateField(auto_now_add=True)
+    code_language = models.ForeignKey(CodeLanguage, on_delete=models.DO_NOTHING, null=True)
+    code_lines = models.PositiveSmallIntegerField(blank=True, null=True)
+    execute_result = models.CharField(max_length=20, blank=True, null=True)
+    execute_time = models.TimeField(blank=True, null=True)
+
+    def get_absolute_url(self):
+        return reverse('practice-detail', args=[str(self.id)])
+
+
+    def __str__(self):
+        """
+        String for representing the Model object (in Admin site etc.)
+        """
+        return self.title
+
+
+
 
 

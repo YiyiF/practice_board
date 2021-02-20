@@ -58,7 +58,10 @@ WORK_PATH = os.getcwd()
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(WORK_PATH, 'practice_boards/templates'), './templates', ],
+        'DIRS': [os.path.join(WORK_PATH, 'practice_boards/templates'), os.path.join(WORK_PATH, 'practice_boards'
+                                                                                               '/templates'
+                                                                                               '/practice_boards'),
+                 './templates', ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
